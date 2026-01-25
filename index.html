@@ -16,6 +16,7 @@
             --yellow: #d29922;
             --red: #f85149;
             --purple: #a371f7;
+            --orange: #f0883e;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -25,7 +26,7 @@
             padding: 20px;
             min-height: 100vh;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
         header {
             display: flex;
             align-items: center;
@@ -46,11 +47,24 @@
         }
         h1 { font-size: 28px; font-weight: 600; }
         .subtitle { color: var(--text-muted); font-size: 14px; }
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
+        }
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
         .card {
             background: var(--card-bg);
@@ -106,6 +120,7 @@
         .tag.done { background: rgba(63,185,80,0.2); color: var(--green); }
         .tag.progress { background: rgba(210,153,34,0.2); color: var(--yellow); }
         .tag.next { background: rgba(88,166,255,0.2); color: var(--accent); }
+        .tag.active { background: rgba(63,185,80,0.2); color: var(--green); }
         .capability {
             display: flex;
             align-items: center;
@@ -126,6 +141,45 @@
         }
         .capability-info h3 { font-size: 14px; font-weight: 500; }
         .capability-info p { font-size: 12px; color: var(--text-muted); }
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .skill-icon {
+            font-size: 24px;
+        }
+        .skill-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .skill-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .ops-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .ops-metric:last-child { border-bottom: none; }
+        .ops-label { font-size: 14px; color: var(--text-muted); }
+        .ops-value { font-size: 16px; font-weight: 600; }
+        .ops-value.green { color: var(--green); }
+        .ops-value.yellow { color: var(--yellow); }
+        .ops-value.accent { color: var(--accent); }
         footer {
             text-align: center;
             padding-top: 24px;
@@ -146,6 +200,7 @@
             </div>
         </header>
 
+        <!-- STATUS & CAPABILITIES -->
         <div class="grid">
             <div class="card">
                 <h2>📡 System Status</h2>
@@ -206,14 +261,14 @@
                     <div class="capability-icon">⏰</div>
                     <div class="capability-info">
                         <h3>Reminders</h3>
-                        <p>Cron-based scheduling with multi-channel delivery</p>
+                        <p>Cron-based scheduling</p>
                     </div>
                 </div>
                 <div class="capability">
                     <div class="capability-icon">🎨</div>
                     <div class="capability-info">
                         <h3>Image Generation</h3>
-                        <p>DALL-E 3 via OpenAI API</p>
+                        <p>DALL-E 3 via OpenAI</p>
                     </div>
                 </div>
                 <div class="capability">
@@ -226,54 +281,158 @@
             </div>
         </div>
 
+        <!-- OPERATIONS -->
+        <div class="section-title">⚙️ Operations</div>
+        <div class="grid grid-3">
+            <div class="card">
+                <h2>🔄 Automation</h2>
+                <div class="ops-metric">
+                    <span class="ops-label">Heartbeat Interval</span>
+                    <span class="ops-value accent">30 min</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Auto-commit</span>
+                    <span class="ops-value green">Active</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Email Polling</span>
+                    <span class="ops-value green">Active</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Health Pings</span>
+                    <span class="ops-value green">Active</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Monitoring</h2>
+                <div class="ops-metric">
+                    <span class="ops-label">Uptime Monitor</span>
+                    <span class="ops-value green">Healthchecks.io</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Git Sync</span>
+                    <span class="ops-value green">GitHub</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Memory Files</span>
+                    <span class="ops-value accent">Daily logs</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Backup</span>
+                    <span class="ops-value yellow">In Progress</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Infrastructure</h2>
+                <div class="ops-metric">
+                    <span class="ops-label">Host OS</span>
+                    <span class="ops-value">Ubuntu Server</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Runtime</span>
+                    <span class="ops-value">Node.js 22</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">LLM</span>
+                    <span class="ops-value">Claude (Anthropic)</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Framework</span>
+                    <span class="ops-value accent">Clawdbot</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="section-title">🧠 Skills</div>
+        <div class="grid grid-3">
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">🌤️</span>
+                    <span class="skill-name">Weather</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">Current conditions and forecasts via wttr.in — no API key required</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">🐙</span>
+                    <span class="skill-name">GitHub</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">Issues, PRs, CI runs via gh CLI — full repo management</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">📝</span>
+                    <span class="skill-name">Notion</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">Pages, databases, and blocks via Notion API</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">💬</span>
+                    <span class="skill-name">Slack</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">Message channels, react, pin/unpin via Slack integration</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">🔵</span>
+                    <span class="skill-name">BlueBubbles</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">iMessage bridge via BlueBubbles REST API</div>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-header">
+                    <span class="skill-icon">🛠️</span>
+                    <span class="skill-name">Skill Creator</span>
+                    <span class="tag active">Active</span>
+                </div>
+                <div class="skill-desc">Design and package new agent skills with scripts and assets</div>
+            </div>
+        </div>
+
+        <!-- BACKLOG -->
+        <div class="section-title">📋 Backlog</div>
         <div class="grid">
             <div class="card">
-                <h2>📋 Backlog</h2>
+                <h2>✅ Completed</h2>
                 <ul>
-                    <li>
-                        <span class="check">✓</span> Email setup (send + receive)
-                        <span class="tag done">Done</span>
-                    </li>
-                    <li>
-                        <span class="check">✓</span> DALL-E 3 integration
-                        <span class="tag done">Done</span>
-                    </li>
-                    <li>
-                        <span class="check">✓</span> Google Drive access
-                        <span class="tag done">Done</span>
-                    </li>
-                    <li>
-                        <span class="check">✓</span> Healthchecks.io monitoring
-                        <span class="tag done">Done</span>
-                    </li>
-                    <li>
-                        <span class="pending">◐</span> Cloud backup automation
-                        <span class="tag progress">In Progress</span>
-                    </li>
-                    <li>
-                        📸 Photo sync
-                        <span class="tag next">Up Next</span>
-                    </li>
-                    <li>
-                        ☁️ Oracle Cloud setup
-                        <span class="tag next">Up Next</span>
-                    </li>
-                    <li>
-                        🌐 Web app development
-                        <span class="tag next">Planned</span>
-                    </li>
+                    <li><span class="check">✓</span> Email setup (SMTP + IMAP)</li>
+                    <li><span class="check">✓</span> DALL-E 3 integration</li>
+                    <li><span class="check">✓</span> Google Drive access</li>
+                    <li><span class="check">✓</span> Healthchecks.io monitoring</li>
+                    <li><span class="check">✓</span> Cron job reminders</li>
+                    <li><span class="check">✓</span> Mind map generation</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h2>🔧 Tech Stack</h2>
+                <h2>🚧 In Progress</h2>
                 <ul>
-                    <li>🤖 <strong>Clawdbot</strong> — AI gateway framework</li>
-                    <li>🧠 <strong>Claude</strong> — Anthropic LLM</li>
-                    <li>🐧 <strong>Ubuntu Server</strong> — VirtualBox VM</li>
-                    <li>📦 <strong>Node.js</strong> — Runtime</li>
-                    <li>🔄 <strong>GitHub Actions</strong> — CI/CD</li>
-                    <li>📊 <strong>Healthchecks.io</strong> — Uptime monitoring</li>
+                    <li><span class="pending">◐</span> Cloud backup automation</li>
+                    <li><span class="pending">◐</span> Dashboard improvements</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📌 Up Next</h2>
+                <ul>
+                    <li>📸 Google Photos sync</li>
+                    <li>☁️ Oracle Cloud deployment</li>
+                    <li>🌐 Web app development</li>
+                    <li>📱 Mobile notifications</li>
                 </ul>
             </div>
         </div>
