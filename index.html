@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thinx AI Dashboard</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        h1 { font-size: 28px; font-weight: 600; }
+        .subtitle { color: var(--text-muted); font-size: 14px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .status-dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+        .status-dot.red { background: var(--red); }
+        .status-label { font-size: 13px; }
+        ul { list-style: none; }
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        li:last-child { border-bottom: none; }
+        .check { color: var(--green); }
+        .pending { color: var(--yellow); }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        .tag.done { background: rgba(63,185,80,0.2); color: var(--green); }
+        .tag.progress { background: rgba(210,153,34,0.2); color: var(--yellow); }
+        .tag.next { background: rgba(88,166,255,0.2); color: var(--accent); }
+        .capability {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .capability:last-child { border-bottom: none; }
+        .capability-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: var(--border);
+        }
+        .capability-info h3 { font-size: 14px; font-weight: 500; }
+        .capability-info p { font-size: 12px; color: var(--text-muted); }
+        footer {
+            text-align: center;
+            padding-top: 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+        .updated { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="avatar">🤖</div>
+            <div>
+                <h1>Thinx AI</h1>
+                <div class="subtitle">Research Assistant • Powered by Clawdbot</div>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📡 System Status</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Gateway</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Telegram</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Email (SMTP)</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Email (IMAP)</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Google Drive</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">DALL-E 3</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Healthchecks</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span class="status-label">Cron Jobs</span>
+                    </div>
+                </div>
+                <div class="updated">All systems operational</div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Capabilities</h2>
+                <div class="capability">
+                    <div class="capability-icon">💬</div>
+                    <div class="capability-info">
+                        <h3>Telegram Chat</h3>
+                        <p>Real-time messaging</p>
+                    </div>
+                </div>
+                <div class="capability">
+                    <div class="capability-icon">📧</div>
+                    <div class="capability-info">
+                        <h3>Email</h3>
+                        <p>Send & receive via SMTP/IMAP</p>
+                    </div>
+                </div>
+                <div class="capability">
+                    <div class="capability-icon">⏰</div>
+                    <div class="capability-info">
+                        <h3>Reminders</h3>
+                        <p>Cron-based scheduling with multi-channel delivery</p>
+                    </div>
+                </div>
+                <div class="capability">
+                    <div class="capability-icon">🎨</div>
+                    <div class="capability-info">
+                        <h3>Image Generation</h3>
+                        <p>DALL-E 3 via OpenAI API</p>
+                    </div>
+                </div>
+                <div class="capability">
+                    <div class="capability-icon">📁</div>
+                    <div class="capability-info">
+                        <h3>Cloud Storage</h3>
+                        <p>Google Drive via rclone</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📋 Backlog</h2>
+                <ul>
+                    <li>
+                        <span class="check">✓</span> Email setup (send + receive)
+                        <span class="tag done">Done</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span> DALL-E 3 integration
+                        <span class="tag done">Done</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span> Google Drive access
+                        <span class="tag done">Done</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span> Healthchecks.io monitoring
+                        <span class="tag done">Done</span>
+                    </li>
+                    <li>
+                        <span class="pending">◐</span> Cloud backup automation
+                        <span class="tag progress">In Progress</span>
+                    </li>
+                    <li>
+                        📸 Photo sync
+                        <span class="tag next">Up Next</span>
+                    </li>
+                    <li>
+                        ☁️ Oracle Cloud setup
+                        <span class="tag next">Up Next</span>
+                    </li>
+                    <li>
+                        🌐 Web app development
+                        <span class="tag next">Planned</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Tech Stack</h2>
+                <ul>
+                    <li>🤖 <strong>Clawdbot</strong> — AI gateway framework</li>
+                    <li>🧠 <strong>Claude</strong> — Anthropic LLM</li>
+                    <li>🐧 <strong>Ubuntu Server</strong> — VirtualBox VM</li>
+                    <li>📦 <strong>Node.js</strong> — Runtime</li>
+                    <li>🔄 <strong>GitHub Actions</strong> — CI/CD</li>
+                    <li>📊 <strong>Healthchecks.io</strong> — Uptime monitoring</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Thinx AI • Powered by <a href="https://github.com/clawdbot/clawdbot">Clawdbot</a></p>
+        </footer>
+    </div>
+</body>
+</html>
