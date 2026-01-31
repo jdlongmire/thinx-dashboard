@@ -63,6 +63,9 @@
         .grid-3 {
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -96,7 +99,7 @@
         }
         .status-dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
         .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
-        .status-dot.red { background: var(--red); }
+        .status-dot.red { background: var(--red); box-shadow: 0 0 8px var(--red); }
         .status-dot.gray { background: var(--text-muted); }
         .status-label { font-size: 13px; }
         ul { list-style: none; }
@@ -140,26 +143,24 @@
         }
         .capability-info h3 { font-size: 14px; font-weight: 500; }
         .capability-info p { font-size: 12px; color: var(--text-muted); }
-        .skill-card {
+        .metric-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            padding: 20px;
+            text-align: center;
         }
-        .skill-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
         }
-        .skill-icon { font-size: 24px; }
-        .skill-name { font-weight: 600; font-size: 16px; }
-        .skill-desc {
-            font-size: 13px;
+        .metric-label {
+            font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
         }
         .ops-metric {
             display: flex;
@@ -174,6 +175,13 @@
         .ops-value.green { color: var(--green); }
         .ops-value.yellow { color: var(--yellow); }
         .ops-value.accent { color: var(--accent); }
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { margin-right: 8px; }
         footer {
             text-align: center;
             padding-top: 24px;
@@ -182,6 +190,12 @@
         }
         footer a { color: var(--accent); text-decoration: none; }
         .updated { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+        .loading { opacity: 0.5; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse { animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
@@ -189,283 +203,282 @@
         <header>
             <img src="avatar.png" alt="ThinxAI" class="avatar">
             <div>
-                <h1>🧠 ThinxAI</h1>
-                <div class="subtitle">Research Assistant · Powered by Clawdbot · Claude Opus 4.5</div>
+                <h1>ThinxAI</h1>
+                <div class="subtitle">Research Assistant · Claude Code CLI · Claude Opus 4.5</div>
             </div>
         </header>
+
+        <!-- METRICS -->
+        <div class="grid grid-4" id="metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="commits-today">--</div>
+                <div class="metric-label">Commits Today</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="telegram-messages">--</div>
+                <div class="metric-label">Telegram Messages</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="emails-sent">--</div>
+                <div class="metric-label">Emails Sent</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="uptime-hours">--</div>
+                <div class="metric-label">Uptime (Hours)</div>
+            </div>
+        </div>
 
         <!-- STATUS & CAPABILITIES -->
         <div class="grid">
             <div class="card">
-                <h2>📡 System Status</h2>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Gateway</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Telegram</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Email (SMTP)</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Email (IMAP)</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Google Drive</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">DALL-E 3</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Cron Jobs</span>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-dot green"></div>
-                        <span class="status-label">Web Search</span>
-                    </div>
+                <h2>System Status</h2>
+                <div class="status-grid" id="status-grid">
+                    <!-- Dynamically populated -->
                 </div>
-                <div class="updated">All systems operational · Updated 2026-01-29 16:16 CST</div>
+                <div class="updated" id="last-updated">Loading...</div>
             </div>
 
             <div class="card">
-                <h2>🎯 Capabilities</h2>
+                <h2>Capabilities</h2>
                 <div class="capability">
                     <div class="capability-icon">💬</div>
                     <div class="capability-info">
-                        <h3>Telegram Chat</h3>
-                        <p>Real-time messaging with inline buttons</p>
+                        <h3>Telegram Bridge</h3>
+                        <p>Natural language routing to Claude CLI</p>
                     </div>
                 </div>
                 <div class="capability">
                     <div class="capability-icon">📧</div>
                     <div class="capability-info">
-                        <h3>Email</h3>
-                        <p>Send &amp; receive via SMTP/IMAP</p>
+                        <h3>Email Integration</h3>
+                        <p>Gmail via SMTP/IMAP with NLP commands</p>
                     </div>
                 </div>
                 <div class="capability">
-                    <div class="capability-icon">⏰</div>
+                    <div class="capability-icon">🖼️</div>
                     <div class="capability-info">
-                        <h3>Scheduling</h3>
-                        <p>Cron jobs &amp; reminders</p>
+                        <h3>Image Display</h3>
+                        <p>View images directly in Telegram</p>
                     </div>
                 </div>
                 <div class="capability">
-                    <div class="capability-icon">🎨</div>
+                    <div class="capability-icon">🔐</div>
                     <div class="capability-info">
-                        <h3>Image Generation</h3>
-                        <p>DALL-E 3 via OpenAI API</p>
+                        <h3>Permission Flow</h3>
+                        <p>Confirmation for risky commands</p>
                     </div>
                 </div>
                 <div class="capability">
-                    <div class="capability-icon">🌐</div>
+                    <div class="capability-icon">🧠</div>
                     <div class="capability-info">
-                        <h3>Web &amp; Browser</h3>
-                        <p>Search, fetch, and browser automation</p>
+                        <h3>Shared Memory</h3>
+                        <p>MEMORY.md context across interfaces</p>
                     </div>
                 </div>
                 <div class="capability">
-                    <div class="capability-icon">📁</div>
+                    <div class="capability-icon">🐙</div>
                     <div class="capability-info">
-                        <h3>File System</h3>
-                        <p>Local drives, G: drive, cloud storage</p>
+                        <h3>GitHub CLI</h3>
+                        <p>Full repo access via gh</p>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- RECENT ACTIVITY -->
+        <div class="section-title">Recent Activity</div>
+        <div class="card">
+            <div id="activity-feed">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
         <!-- OPERATIONS -->
-        <div class="section-title">⚙️ Operations</div>
+        <div class="section-title">Operations</div>
         <div class="grid grid-3">
             <div class="card">
-                <h2>🔄 Automation</h2>
+                <h2>Automation</h2>
                 <div class="ops-metric">
-                    <span class="ops-label">Heartbeat</span>
-                    <span class="ops-value accent">Configured</span>
+                    <span class="ops-label">Telegram Bridge</span>
+                    <span class="ops-value green">Running</span>
                 </div>
                 <div class="ops-metric">
-                    <span class="ops-label">Auto-commit</span>
+                    <span class="ops-label">Dashboard Sync</span>
+                    <span class="ops-value green">Hourly</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Conversation Logs</span>
                     <span class="ops-value green">Active</span>
                 </div>
                 <div class="ops-metric">
-                    <span class="ops-label">Email Polling</span>
-                    <span class="ops-value green">Active</span>
-                </div>
-                <div class="ops-metric">
-                    <span class="ops-label">Memory Logging</span>
+                    <span class="ops-label">Session Tracking</span>
                     <span class="ops-value green">Active</span>
                 </div>
             </div>
 
             <div class="card">
-                <h2>📊 Monitoring</h2>
+                <h2>Memory System</h2>
                 <div class="ops-metric">
-                    <span class="ops-label">Git Sync</span>
-                    <span class="ops-value green">GitHub</span>
-                </div>
-                <div class="ops-metric">
-                    <span class="ops-label">Memory Files</span>
-                    <span class="ops-value accent">Daily logs</span>
-                </div>
-                <div class="ops-metric">
-                    <span class="ops-label">Long-term Memory</span>
+                    <span class="ops-label">Shared Context</span>
                     <span class="ops-value green">MEMORY.md</span>
                 </div>
                 <div class="ops-metric">
-                    <span class="ops-label">Backup</span>
-                    <span class="ops-value yellow">In Progress</span>
+                    <span class="ops-label">Chat History</span>
+                    <span class="ops-value accent">JSONL</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Session Logs</span>
+                    <span class="ops-value accent">thinx_tuning/</span>
+                </div>
+                <div class="ops-metric">
+                    <span class="ops-label">Recovery Docs</span>
+                    <span class="ops-value green">thinx-recovery/</span>
                 </div>
             </div>
 
             <div class="card">
-                <h2>🔧 Infrastructure</h2>
+                <h2>Infrastructure</h2>
                 <div class="ops-metric">
                     <span class="ops-label">Host</span>
-                    <span class="ops-value">WSL2 (Linux)</span>
+                    <span class="ops-value">Linux (Native)</span>
                 </div>
                 <div class="ops-metric">
                     <span class="ops-label">Runtime</span>
-                    <span class="ops-value">Node.js 24</span>
+                    <span class="ops-value">Python 3.10+</span>
                 </div>
                 <div class="ops-metric">
                     <span class="ops-label">LLM</span>
                     <span class="ops-value">Claude Opus 4.5</span>
                 </div>
                 <div class="ops-metric">
-                    <span class="ops-label">Framework</span>
-                    <span class="ops-value accent">Clawdbot</span>
+                    <span class="ops-label">Interface</span>
+                    <span class="ops-value accent">Claude Code CLI</span>
                 </div>
             </div>
         </div>
 
-        <!-- SKILLS -->
-        <div class="section-title">🧠 Skills</div>
-        <div class="grid grid-3">
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">🌤️</span>
-                    <span class="skill-name">Weather</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Current conditions and forecasts via wttr.in</div>
+        <!-- DOMAINS -->
+        <div class="section-title">Research Domains</div>
+        <div class="grid grid-4">
+            <div class="card" style="text-align: center;">
+                <h2>ThinxAI</h2>
+                <div style="font-size: 32px; margin: 10px 0;">🧠</div>
+                <p style="font-size: 12px; color: var(--text-muted);">Platform & Automation</p>
             </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">🐙</span>
-                    <span class="skill-name">GitHub</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Issues, PRs, CI runs via gh CLI</div>
+            <div class="card" style="text-align: center;">
+                <h2>oddXian</h2>
+                <div style="font-size: 32px; margin: 10px 0;">✝️</div>
+                <p style="font-size: 12px; color: var(--text-muted);">Apologetics Research</p>
             </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">📝</span>
-                    <span class="skill-name">Notion</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Pages, databases, and blocks via Notion API</div>
+            <div class="card" style="text-align: center;">
+                <h2>AI Research</h2>
+                <div style="font-size: 32px; margin: 10px 0;">🤖</div>
+                <p style="font-size: 12px; color: var(--text-muted);">AIDK Framework</p>
             </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">💬</span>
-                    <span class="skill-name">Slack</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Channel messaging, reactions, pin/unpin</div>
-            </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">🔵</span>
-                    <span class="skill-name">BlueBubbles</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">iMessage bridge via BlueBubbles REST API</div>
-            </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">🖥️</span>
-                    <span class="skill-name">tmux</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Remote-control interactive CLI sessions</div>
-            </div>
-
-            <div class="skill-card">
-                <div class="skill-header">
-                    <span class="skill-icon">🛠️</span>
-                    <span class="skill-name">Skill Creator</span>
-                    <span class="tag active">Active</span>
-                </div>
-                <div class="skill-desc">Design and package new agent skills</div>
+            <div class="card" style="text-align: center;">
+                <h2>Logic Realism</h2>
+                <div style="font-size: 32px; margin: 10px 0;">🔬</div>
+                <p style="font-size: 12px; color: var(--text-muted);">L3 Theory</p>
             </div>
         </div>
 
         <!-- BACKLOG -->
-        <div class="section-title">📋 Backlog</div>
+        <div class="section-title">Backlog</div>
         <div class="grid">
             <div class="card">
-                <h2>✅ Completed</h2>
+                <h2>Completed</h2>
                 <ul>
-                    <li><span class="check">✓</span> Email setup (SMTP + IMAP)</li>
-                    <li><span class="check">✓</span> DALL-E 3 integration</li>
-                    <li><span class="check">✓</span> Google Drive access</li>
-                    <li><span class="check">✓</span> Cron job reminders</li>
-                    <li><span class="check">✓</span> Migration from Thinx to ThinxAI</li>
-                    <li><span class="check">✓</span> OpenAI API configured</li>
-                    <li><span class="check">✓</span> oddXian article conversion (138/147)</li>
-                    <li><span class="check">✓</span> Hourly health email automation</li>
-                    <li><span class="check">✓</span> Dashboard auto-update cron</li>
+                    <li><span class="check">✓</span> Telegram Bridge with Claude CLI</li>
+                    <li><span class="check">✓</span> Gmail integration (SMTP + IMAP)</li>
+                    <li><span class="check">✓</span> NLP command parsing</li>
+                    <li><span class="check">✓</span> Permission confirmation flow</li>
+                    <li><span class="check">✓</span> Prompt injection safeguards</li>
+                    <li><span class="check">✓</span> Image display in Telegram</li>
+                    <li><span class="check">✓</span> Shared MEMORY.md context</li>
+                    <li><span class="check">✓</span> Disaster recovery documentation</li>
+                    <li><span class="check">✓</span> Full admin permissions</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h2>🚧 In Progress</h2>
+                <h2>In Progress</h2>
                 <ul>
-                    <li><span class="pending">◐</span> Google Drive backup automation</li>
-                    <li><span class="pending">◐</span> ThinxAI.net domain setup</li>
+                    <li><span class="pending">◐</span> Dashboard auto-update system</li>
+                    <li><span class="pending">◐</span> ThinxAI.net domain integration</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h2>📌 Up Next</h2>
+                <h2>Up Next</h2>
                 <ul>
-                    <li>📸 Google Photos sync</li>
-                    <li>☁️ Oracle Cloud deployment</li>
-                    <li>🌐 Web app development</li>
-                    <li>📅 Google Calendar direct integration</li>
-                    <li>🔒 Tailscale remote access</li>
+                    <li>Voice message transcription</li>
+                    <li>Image generation (DALL-E)</li>
+                    <li>Calendar integration</li>
+                    <li>Web scraping capabilities</li>
+                    <li>Multi-user support</li>
                 </ul>
             </div>
-        </div>
-
-        <!-- ARCHITECTURE -->
-        <div class="section-title">🏗️ Architecture</div>
-        <div class="card" style="text-align: center;">
-            <h2>TOGAF Capability Viewpoint</h2>
-            <a href="thinx-capability-viewpoint.png" target="_blank">
-                <img src="thinx-capability-viewpoint.png" alt="ThinxAI Capability Architecture" style="max-width: 100%; border-radius: 8px; margin-top: 12px; cursor: zoom-in;">
-            </a>
-            <p style="color: var(--text-muted); font-size: 12px; margin-top: 12px;">
-                Business Capabilities → Application Services → Technology Platform → External Services
-            </p>
         </div>
 
         <footer>
-            <p>ThinxAI 🧠 · Powered by <a href="https://github.com/clawdbot/clawdbot">Clawdbot</a> · Claude Opus 4.5</p>
+            <p>ThinxAI · <a href="https://thinxai.net">thinxai.net</a> · Claude Opus 4.5</p>
+            <p style="margin-top: 4px;"><a href="https://github.com/jdlongmire/thinx">GitHub</a></p>
         </footer>
     </div>
+
+    <script>
+        async function loadStatus() {
+            try {
+                const response = await fetch('status.json?' + Date.now());
+                const data = await response.json();
+
+                // Update metrics
+                document.getElementById('commits-today').textContent = data.metrics?.commits_today ?? '--';
+                document.getElementById('telegram-messages').textContent = data.metrics?.telegram_messages ?? '--';
+                document.getElementById('emails-sent').textContent = data.metrics?.emails_sent ?? '--';
+                document.getElementById('uptime-hours').textContent = data.metrics?.uptime_hours ?? '--';
+
+                // Update services status
+                const statusGrid = document.getElementById('status-grid');
+                statusGrid.innerHTML = '';
+                for (const [key, service] of Object.entries(data.services || {})) {
+                    const statusClass = service.status === 'online' ? 'green' :
+                                       service.status === 'degraded' ? 'yellow' : 'red';
+                    statusGrid.innerHTML += `
+                        <div class="status-item">
+                            <div class="status-dot ${statusClass}"></div>
+                            <span class="status-label">${service.label}</span>
+                        </div>
+                    `;
+                }
+
+                // Update activity feed
+                const activityFeed = document.getElementById('activity-feed');
+                activityFeed.innerHTML = '';
+                for (const activity of (data.recent_activity || [])) {
+                    activityFeed.innerHTML += `
+                        <div class="activity-item">
+                            <span class="activity-icon">▸</span>
+                            ${activity}
+                        </div>
+                    `;
+                }
+
+                // Update timestamp
+                document.getElementById('last-updated').textContent =
+                    `Updated ${data.updated || 'Unknown'}`;
+
+            } catch (error) {
+                console.error('Failed to load status:', error);
+                document.getElementById('last-updated').textContent = 'Failed to load status';
+            }
+        }
+
+        // Load on page load
+        loadStatus();
+
+        // Refresh every 5 minutes
+        setInterval(loadStatus, 5 * 60 * 1000);
+    </script>
 </body>
 </html>
